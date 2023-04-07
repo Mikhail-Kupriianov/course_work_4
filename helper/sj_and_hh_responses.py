@@ -1,14 +1,25 @@
 import requests
+"""Модуль демонстрирует доступ к вакансиям на HeadHaunter и SuperJob сервисах"""
 
+# Переменные с url адресами сервисов для списка вакансий
 url_hh = "https://api.hh.ru/vacancies"
 url_sj = "	https://api.superjob.ru/2.0/vacancies/"
 
+# Параметры для запроса
+# "text" - фильтр для отбора вакансий
+# "per_page" - количество возвращаемых вакансий
 hh_params = {
     "text": "python",
     "per_page": 1
 }
+
+# Параметр "page" - Номер страницы результата поиска. Может быть от 0 до 500.	По умолчанию значение - 0.
+# Параметр "count" - Количество результатов на страницу поиска. Может быть от 1 до 100. По умолчанию значение - 20.
+# Максимальное количество сущностей, выдаваемых API равно 500.
+# Это значит, например, при поиске резюме по 100 резюме на страницу, всего можно просмотреть 5 страниц.
 sj_params = {
-    "count": 0
+    "page": 0,
+    "count": 100
 }
 
 key = {
@@ -38,8 +49,21 @@ sj_response = requests.get(url_sj, headers=key, params=sj_params)
 print(sj_response.status_code)
 
 if sj_response.status_code == 200:
-    print("успешно")
-    vacancies = sj_response.json()
+
+    vacancies = sj_response.json()  # ['objects']
+
+    print(vacancies)
+
+    total_vac = 0
+
+    for key, val in vacancies.items():
+        print(f"Ключ - {key} : Значение {val}")
+
+    for sj_object in vacancies['objects']:
+        total_vac += 1
+        print(sj_object['firm_name'], sj_object['profession'], sj_object['town']['title'])
+    print(f'Всего вакансий: {total_vac}')
+
     print("Вакансия", vacancies['objects'][0]['id'])
     print("Закрыта", vacancies['objects'][0]['is_closed'])
     print(vacancies['objects'][0]['link'])
