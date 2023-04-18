@@ -21,8 +21,9 @@ url_sj = "	https://api.superjob.ru/2.0/vacancies/"
 sj_params = [
     ("keywords", [("srws", 1), ("skwc", "particular"), ("keys", "Инженер-программист")]),
     ("keywords", [("srws", 1), ("skwc", "particular"), ("keys", "АСУ")]),
+    ("keywords", [("srws", 2), ("skwc", "particular"), ("keys", "Мираторг")]),
     ("period", 0),
-    ("count", 100)
+    ("count", 10)
 ]
 
 key = {
