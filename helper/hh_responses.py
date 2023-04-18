@@ -14,11 +14,13 @@ url_hh = "https://api.hh.ru/vacancies"
 #       - "description" в описании вакансии.
 # Параметр "per_page" - количество возвращаемых вакансий, по умолчанию 20, максимум 100
 # Параметр "period" - период публикации. Если None - все даты.
+# "search_field": ["name", "company_name", "description"]
+# API запрос по номеру вакансии в браузере https://api.hh.ru/vacancies/79285897/  - 79285897 id вакансии
 hh_params = {
-    "text": "1С оформление трвлда",
-    "search_field": ["name", "company_name", "description"],
-    "per_page": 25,
-    "period": 2
+    "text": "Python Developer",
+    "search_field": ["name"],
+    "per_page": 100,
+    "period": 200
 }
 
 response = requests.get(url_hh, params=hh_params)
@@ -39,11 +41,22 @@ if response.status_code == 200:
         print(vacancy["created_at"])
         print(vacancy["area"]["name"])
 
-        try:
+        # try:
+        #     vacancy["salary"]["from"]
+        # except TypeError:
+        #     print("'NoneType' object")
+        #     vacancy["salary"]["from"] = 0
+
+        # try:
+        #     print(
+        #         f'Зарплата от {vacancy["salary"]["from"]} до {vacancy["salary"]["to"]} {vacancy["salary"]["currency"]}'
+        #         f' на руки - {vacancy["salary"]["gross"]}')
+        # except TypeError:
+        #     print('з/п не указана')
+        if vacancy["salary"]:
             print(
-                f'Зарплата от {vacancy["salary"]["from"]} до {vacancy["salary"]["to"]} {vacancy["salary"]["currency"]}'
-                f' на руки - {vacancy["salary"]["gross"]}')
-        except TypeError:
+                f'Зарплата от {vacancy["salary"]["from"]} до {vacancy["salary"]["to"]} {vacancy["salary"]["currency"]}')
+        else:
             print('з/п не указана')
 
         print(vacancy["snippet"]["responsibility"])
@@ -51,4 +64,7 @@ if response.status_code == 200:
     print(f'Всего вакансий HH: {total_vac}')
 else:
     print("Error:", response.status_code)
+
+print(response)
+
 
