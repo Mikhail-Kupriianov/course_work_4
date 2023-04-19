@@ -25,6 +25,11 @@ class Vacancies:
     def __lt__(self, other):
         return self.salary < other.salary
 
+    @classmethod
+    def top_n(cls, n: int):
+        cls.all.sort(reverse=True)
+        return cls.all[:n]
+
     def __str__(self):
         give_str = f"Вакансия {self.id_vac}\n{self.created_at}\n{self.name_vac}\n{self.url_vac}\n"
         if not self.salary:
@@ -92,7 +97,7 @@ if __name__ == '__main__':
     vac3 = Vacancies(dict_data3)
     vac4 = Vacancies(dict_data4)
 
-    vac_list =[vac1, vac2, vac3, vac4]
+    vac_list = Vacancies.all
     print(vac_list)
     for item in vac_list:
         print(item, "\n")
@@ -103,5 +108,8 @@ if __name__ == '__main__':
     vac_list.sort(reverse=True)
     print("Сортировка по убыванию \n")
     for item in vac_list:
+        print(item, "\n")
+    print("ТОП 2 по зарплате \n")
+    for item in Vacancies.top_n(2):
         print(item, "\n")
 
