@@ -46,6 +46,11 @@ class Vacancies:
     def __repr__(self):
         return f"{self.__class__.__name__}('{self.id_vac}')"
 
+    def display_vac(self):
+        for vac in self.all:
+            print(vac)
+        print(f"Всего вакансий - {len(Vacancies.all)}")
+
 
 if __name__ == '__main__':
     dict_data1 = {'id_vac': 'hh_77236116',
@@ -109,6 +114,7 @@ if __name__ == '__main__':
     print("Сортировка по убыванию \n")
     for item in vac_list:
         print(item, "\n")
+    print(f"Всего вакансий - {len(Vacancies.all)}")
     print("ТОП 2 по зарплате \n")
     for item in Vacancies.top_n(2):
         print(item, "\n")
