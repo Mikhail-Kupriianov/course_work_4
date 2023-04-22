@@ -1,6 +1,8 @@
 import os
 import json
-from src.vacancies import Vacancies
+
+
+DATA_PATH = os.path.abspath("..\data")
 
 
 class StorageJson:
@@ -10,10 +12,12 @@ class StorageJson:
     def __init__(self, file_name="storage_vac.json"):
         self.id = None
         self.file_name = file_name
-        self.path = os.path.join('data', self.file_name)
+        self.path = os.path.join(DATA_PATH, self.file_name)
+        if not os.path.exists(self.path):
+            self.del_all()
 
     @staticmethod
-    def to_json(vac_obj):
+    def to_dict(vac_obj):
         result = {"id_vac": vac_obj.id_vac, "name_vac": vac_obj.name_vac, "created_at": vac_obj.created_at,
                   "salary_from": vac_obj.salary_from, "salary_to": vac_obj.salary_to, "place": vac_obj.place,
                   "url_vac": vac_obj.url_vac, "employer": vac_obj.employer, "skills": vac_obj.skills,
@@ -21,93 +25,77 @@ class StorageJson:
         return result
 
     def update(self, new_data: list):
-        pass
+        # self.data_buffer = []
+        missed = 0
+        written = 0
+        data_for_add = [self.to_dict(item) for item in new_data]
+        self.data_buffer = self.load_vac()
 
-    def load_vac(self, keywords: str):
+        for vac in data_for_add:
+            if vac["id_vac"] not in [x["id_vac"] for x in self.data_buffer]:
+                self.data_buffer.append(vac)
+                written += 1
+            else:
+                missed += 1
+
+        with open(self.path, 'w', encoding='utf-8') as data_file:
+            json.dump(self.data_buffer, data_file, ensure_ascii=False, indent=4)
+        print(f"Записано вакансий - {written}, пропущено (уже есть в файле) - {missed}")
+
+    def load_vac(self, keywords: str = "") -> list:
 
         """
         Функция получает данные из файла operations.json в корне проекта и отбрасывает пустые словари
         :return: Список операций в виде списка словарей
         """
         result = []
-        with open(self.path, 'rt', encoding='utf-8') as data_file:
-            for item in json.loads("".join(data_file.readlines())):
-                if item:
-                    result.append(item)
+        if keywords:
+            with open(self.path, 'rt', encoding='utf-8') as data_file:
+                for item in json.load(data_file):
+                    for keyword in keywords.split():
+                        for item_val in item.values():
+                            if keyword.isdigit() and str(item_val).isdigit():
+                                if int(keyword) <= item_val:
+                                    result.append(item)
+                                    break
+                            elif keyword.isalpha() and not str(item_val).isdigit() and item_val is not None:
+                                if keyword.lower() in item_val.lower():
+                                    result.append(item)
+        else:
+            with open(self.path, 'rt', encoding='utf-8') as data_file:
+                result = json.load(data_file)
 
         return result
 
-    def mark_del(self):
-        pass
+    def mark_del(self, id_vac: str):
+        for item in id_vac.split():
+            self.marked_delete.append(item)
+
+    def clear_marks(self):
+        self.marked_delete = []
 
     def del_marked(self):
-        pass
+        self.data_buffer = []
+        file_data = self.load_vac()
+        for vac in file_data:
+            if vac["id_vac"] not in self.marked_delete:
+                self.data_buffer.append(vac)
+
+        with open(self.path, 'w', encoding='utf-8') as data_file:
+            json.dump(self.data_buffer, data_file, ensure_ascii=False, sort_keys=False, indent=4)
+        self.clear_marks()
 
     def del_all(self):
-        pass
+        empty_list = []
+        with open(self.path, 'w', encoding='utf-8') as data_file:
+            json.dump(empty_list, data_file, ensure_ascii=False, sort_keys=False, indent=4)
 
-
-if __name__ == '__main__':
-    dict_data1 = {'id_vac': 'hh_77236116',
-                  'name_vac': 'Junior Python Backend Developer',
-                  'created_at': '2023-04-03',
-                  'salary_from': 65000,
-                  'salary_to': None,
-                  'place': 'Санкт-Петербург',
-                  'url_vac': 'https://hh.ru/vacancy/77236116',
-                  'employer': 'АпТрейдер (UpTrader)',
-                  'skills': 'Уверенное знание <highlighttext>python</highlighttext>. Уверенное знание django и DRF. Опыт работы с git. Опыт работы с PostgreSQL и умение писать SQL...',
-                  'charge': 'Поддерживать и дополнять функционал CRM.'
-                  }
-    dict_data2 = {'id_vac': 'hh_77236126',
-                  'name_vac': 'Junior Python Backend Developer',
-                  'created_at': '2023-04-03',
-                  'salary_from': None,
-                  'salary_to': 70000,
-                  'place': 'Санкт-Петербург',
-                  'url_vac': 'https://hh.ru/vacancy/77236116',
-                  'employer': 'АпТрейдер (UpTrader)',
-                  'skills': 'Уверенное знание <highlighttext>python</highlighttext>. Уверенное знание django и DRF. Опыт работы с git. Опыт работы с PostgreSQL и умение писать SQL...',
-                  'charge': 'Поддерживать и дополнять функционал CRM.'
-                  }
-    dict_data3 = {'id_vac': 'hh_77236136',
-                  'name_vac': 'Junior Python Backend Developer',
-                  'created_at': '2023-04-03',
-                  'salary_from': None,
-                  'salary_to': None,
-                  'place': 'Санкт-Петербург',
-                  'url_vac': 'https://hh.ru/vacancy/77236116',
-                  'employer': 'АпТрейдер (UpTrader)',
-                  'skills': 'Уверенное знание <highlighttext>python</highlighttext>. Уверенное знание django и DRF. Опыт работы с git. Опыт работы с PostgreSQL и умение писать SQL...',
-                  'charge': 'Поддерживать и дополнять функционал CRM.'
-                  }
-    dict_data4 = {'id_vac': 'hh_77236146',
-                  'name_vac': 'Junior Python Backend Developer',
-                  'created_at': '2023-04-03',
-                  'salary_from': 50000,
-                  'salary_to': 60000,
-                  'place': 'Санкт-Петербург',
-                  'url_vac': 'https://hh.ru/vacancy/77236116',
-                  'employer': 'АпТрейдер (UpTrader)',
-                  'skills': 'Уверенное знание <highlighttext>python</highlighttext>. Уверенное знание django и DRF. Опыт работы с git. Опыт работы с PostgreSQL и умение писать SQL...',
-                  'charge': 'Поддерживать и дополнять функционал CRM.'
-                  }
-    vac1 = Vacancies(dict_data1)
-    vac2 = Vacancies(dict_data2)
-    vac3 = Vacancies(dict_data3)
-    vac4 = Vacancies(dict_data4)
-
-    # Data to be written
-    dictionary = [StorageJson.to_json(item) for item in Vacancies.all]
-
-    # Serializing json
-    json_object = json.dumps(dictionary, ensure_ascii=False, indent=4)
-    print('Данные в JSON формате')
-    print(json_object)
-
-    with open('Serializing_json.json', 'w', encoding="utf-8") as file:
-        json.dump(json_object, file, ensure_ascii=False, sort_keys=False, indent=2)
-
-    with open('Serializing_json.json', 'rt', encoding="utf-8") as file:
-        loaded_data = json.load(file)
-        print(loaded_data)
+    @staticmethod
+    def display_vac(data: list):
+        if data:
+            for v in data:
+                for key, value in v.items():
+                    print(key, value)
+                print("+" * 30)
+        else:
+            print("Нет данных для вывода")
