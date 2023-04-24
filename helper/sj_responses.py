@@ -1,3 +1,5 @@
+import os
+
 import requests
 from datetime import datetime
 
@@ -6,28 +8,45 @@ from datetime import datetime
 # Переменная с url адресом сервиса для списка вакансий
 url_sj = "	https://api.superjob.ru/2.0/vacancies/"
 
-# Параметр "count" - Количество результатов поиска. Может быть от 1 до 100. По умолчанию значение - 20
-# "keyword": "python программист",
-# "keywords": [{"srws": 1, "skwc": "or", "keys": "python"},
-#                  {"srws": 3, "skwc": "or", "keys": " программист"}],
-# srws	int	Да	Что искать (в каком текстовом блоке вакансии искать).
+# Параметры передаются в виде списка кортежей
+# ("count", 12) - количество результатов поиска. Может быть от 1 до 100. По умолчанию значение - 20
+# ("period", 0) int - период публикации
 # Список возможных значений:
-#   1 — должность
-#   2 — название компании
-#   3 — должностные обязанности
+#   1 — 24 часа
+#   3 — 3 дня
+#   7 — неделя
+#   0 — за всё время
+# ("keyword", "python программист") слово(а) для поиска по всем полям вакансии
+# ("keywords", [("srws", 1), ("skwc", "particular"), ("keys", "Инженер-программист")])
+
+# srws	int	- в каком поле вакансии искать
+# Список возможных значений:
+#   1 — должность !!!
+#   2 — название компании !!!
+#   3 — должностные обязанности !!!
 #   4 — требования к квалификации
 #   5 — условия работы
 #   10 — весь текст вакансии
+#
+# skwc	string - как искать
+# Список возможных значений:
+#   and — все слова
+#   or — хотя бы одно слово
+#   particular — точную фразу
+#   nein — слова-исключения
+#
+# keys str - ключевое слово
 sj_params = [
-    ("keywords", [("srws", 1), ("skwc", "particular"), ("keys", "Инженер-программист")]),
-    ("keywords", [("srws", 1), ("skwc", "particular"), ("keys", "АСУ")]),
-    ("keywords", [("srws", 2), ("skwc", "particular"), ("keys", "Мираторг")]),
-    ("period", 0),
-    ("count", 10)
+    ("keywords", [("srws", 1), ("skwc", "particular"), ("keys", "Сервисный инженер направления по поддержке, ремонту печатающей и организационной техники")]),
+    # ("keywords", [("srws", 1), ("skwc", "particular"), ("keys", "АСУ")]),
+    #  ("keywords", [("srws", 2), ("skwc", "particular"), ("keys", "Мираторг")]),
+    # ("period", 1),
+    ("count", 5),
+    ("count", 50),
+    ("count", 100)
 ]
 
-key = {
-    "X-Api-App-Id": "v3.r.137477023.b5c750054712a5efe77fcd597e716d270b064aed.7a86819e391d1c559f0c04057a3da02a467b68c9"}
+key = {os.environ.get('API_KEY_SJ').split(": ")[0]: os.environ.get('API_KEY_SJ').split(": ")[1]}
 
 sj_response = requests.get(url_sj, headers=key, params=sj_params)
 
@@ -37,12 +56,10 @@ if sj_response.status_code == 200:
 
     vacancies = sj_response.json()  # ['objects']
 
-    # print(vacancies)
+    print(vacancies)
+    input("pause")
 
     total_vac = 0
-
-    # for key, val in vacancies.items():
-    #     print(f"Ключ - {key} : Значение {val}")
 
     for sj_object in vacancies['objects']:
         total_vac += 1
@@ -60,16 +77,6 @@ if sj_response.status_code == 200:
         print(sj_object['candidat'])
         print('=' * 25)
     print(f'Всего вакансий SupeJob: {total_vac}')
-
-    # print("Вакансия", vacancies['objects'][0]['id'])
-    # print("Закрыта", vacancies['objects'][0]['is_closed'])
-    # print(vacancies['objects'][0]['link'])
-    # print(vacancies['objects'][0]['firm_name'])
-    # print(vacancies['objects'][0]['profession'])
-    # print(vacancies['objects'][0]['town']['title'])
-    # print(f"Зарплата от {vacancies['objects'][0]['payment_from']} до {vacancies['objects'][0]['payment_to']} "
-    #       f"{vacancies['objects'][0]['currency']}")
-    # print(vacancies['objects'][0]['candidat'])
 
 else:
     print("Error:", sj_response.status_code)
