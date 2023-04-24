@@ -24,5 +24,5 @@ class GetVacancies(ABC):
         pass
 
     @abstractmethod
-    def provide_vacancies(self):
+    def provide_vacancies(self) -> list:
         pass
