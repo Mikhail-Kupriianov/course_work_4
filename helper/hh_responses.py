@@ -41,18 +41,6 @@ if response.status_code == 200:
         print(vacancy["created_at"])
         print(vacancy["area"]["name"])
 
-        # try:
-        #     vacancy["salary"]["from"]
-        # except TypeError:
-        #     print("'NoneType' object")
-        #     vacancy["salary"]["from"] = 0
-
-        # try:
-        #     print(
-        #         f'Зарплата от {vacancy["salary"]["from"]} до {vacancy["salary"]["to"]} {vacancy["salary"]["currency"]}'
-        #         f' на руки - {vacancy["salary"]["gross"]}')
-        # except TypeError:
-        #     print('з/п не указана')
         if vacancy["salary"]:
             print(
                 f'Зарплата от {vacancy["salary"]["from"]} до {vacancy["salary"]["to"]} {vacancy["salary"]["currency"]}')

@@ -50,8 +50,6 @@ key = {os.environ.get('API_KEY_SJ').split(": ")[0]: os.environ.get('API_KEY_SJ')
 
 sj_response = requests.get(url_sj, headers=key, params=sj_params)
 
-# print(sj_response.status_code)
-
 if sj_response.status_code == 200:
 
     vacancies = sj_response.json()  # ['objects']
