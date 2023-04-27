@@ -1,4 +1,10 @@
 class Vacancies:
+    """Данный класс инициализируется данными вакансий из класса, который унаследован от класса GetVacancies.
+    Объекты класса хранятся в списке класса, который при помощи методов класса можно выводить на экран,
+    сортировать по зарплате и выводить TOP N вакансий по зарплате с произвольным числом N."""
+
+    __slots__ = ('id_vac', 'name_vac', 'created_at', 'salary_from', 'salary_to', 'place', 'url_vac', 'employer',
+                 'skills', 'charge', 'salary',)
     all = []
 
     def __init__(self, data: dict):
@@ -23,14 +29,19 @@ class Vacancies:
         self.all.append(self)
 
     def __lt__(self, other):
+        """Метод сравнивает объекты по зарплате"""
+
         return self.salary < other.salary
 
     @classmethod
     def top_n(cls, n: int):
+        """Метод возвращает TOP N вакансий по зарплате"""
         cls.all.sort(reverse=True)
         return cls.all[:n]
 
     def __str__(self):
+        """Метод переопределяет строковое представление объекта класса"""
+
         give_str = f"Вакансия {self.id_vac}\n{self.created_at}\n{self.name_vac}\n{self.url_vac}\n"
         if not self.salary:
             give_str += "З\\П не указана\n"
@@ -47,75 +58,8 @@ class Vacancies:
         return f"{self.__class__.__name__}('{self.id_vac}')"
 
     def display_vac(self):
+        """Метод выводит список вакансий класса на экран"""
+
         for vac in self.all:
             print(vac)
         print(f"Всего вакансий - {len(Vacancies.all)}")
-
-
-if __name__ == '__main__':
-    dict_data1 = {'id_vac': 'hh_77236116',
-                  'name_vac': 'Junior Python Backend Developer',
-                  'created_at': '2023-04-03',
-                  'salary_from': 65000,
-                  'salary_to': None,
-                  'place': 'Санкт-Петербург',
-                  'url_vac': 'https://hh.ru/vacancy/77236116',
-                  'employer': 'АпТрейдер (UpTrader)',
-                  'skills': 'Уверенное знание <highlighttext>python</highlighttext>. Уверенное знание django и DRF. Опыт работы с git. Опыт работы с PostgreSQL и умение писать SQL...',
-                  'charge': 'Поддерживать и дополнять функционал CRM.'
-                  }
-    dict_data2 = {'id_vac': 'hh_77236126',
-                  'name_vac': 'Junior Python Backend Developer',
-                  'created_at': '2023-04-03',
-                  'salary_from': None,
-                  'salary_to': 70000,
-                  'place': 'Санкт-Петербург',
-                  'url_vac': 'https://hh.ru/vacancy/77236116',
-                  'employer': 'АпТрейдер (UpTrader)',
-                  'skills': 'Уверенное знание <highlighttext>python</highlighttext>. Уверенное знание django и DRF. Опыт работы с git. Опыт работы с PostgreSQL и умение писать SQL...',
-                  'charge': 'Поддерживать и дополнять функционал CRM.'
-                  }
-    dict_data3 = {'id_vac': 'hh_77236136',
-                  'name_vac': 'Junior Python Backend Developer',
-                  'created_at': '2023-04-03',
-                  'salary_from': None,
-                  'salary_to': None,
-                  'place': 'Санкт-Петербург',
-                  'url_vac': 'https://hh.ru/vacancy/77236116',
-                  'employer': 'АпТрейдер (UpTrader)',
-                  'skills': 'Уверенное знание <highlighttext>python</highlighttext>. Уверенное знание django и DRF. Опыт работы с git. Опыт работы с PostgreSQL и умение писать SQL...',
-                  'charge': 'Поддерживать и дополнять функционал CRM.'
-                  }
-    dict_data4 = {'id_vac': 'hh_77236146',
-                  'name_vac': 'Junior Python Backend Developer',
-                  'created_at': '2023-04-03',
-                  'salary_from': 50000,
-                  'salary_to': 60000,
-                  'place': 'Санкт-Петербург',
-                  'url_vac': 'https://hh.ru/vacancy/77236116',
-                  'employer': 'АпТрейдер (UpTrader)',
-                  'skills': 'Уверенное знание <highlighttext>python</highlighttext>. Уверенное знание django и DRF. Опыт работы с git. Опыт работы с PostgreSQL и умение писать SQL...',
-                  'charge': 'Поддерживать и дополнять функционал CRM.'
-                  }
-    vac1 = Vacancies(dict_data1)
-    vac2 = Vacancies(dict_data2)
-    vac3 = Vacancies(dict_data3)
-    vac4 = Vacancies(dict_data4)
-
-    vac_list = Vacancies.all
-    print(vac_list)
-    for item in vac_list:
-        print(item, "\n")
-    vac_list.sort()
-    print("Сортировка по возрастанию \n")
-    for item in vac_list:
-        print(item, "\n")
-    vac_list.sort(reverse=True)
-    print("Сортировка по убыванию \n")
-    for item in vac_list:
-        print(item, "\n")
-    print(f"Всего вакансий - {len(Vacancies.all)}")
-    print("ТОП 2 по зарплате \n")
-    for item in Vacancies.top_n(2):
-        print(item, "\n")
-
