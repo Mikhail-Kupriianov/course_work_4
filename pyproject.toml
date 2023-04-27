@@ -9,6 +9,7 @@ packages = [{include = "course_work_4"}]
 [tool.poetry.dependencies]
 python = "^3.7"
 requests = "^2.28.2"
+benedict = "^0.3.2"
 
 
 [tool.poetry.group.dev.dependencies]
