@@ -1,3 +1,4 @@
+import json
 import os
 from datetime import datetime
 
@@ -55,7 +56,10 @@ class HHVacancies(GetVacancies):
 
         response = requests.get(self.url, headers=self.headers, params=self.params)
         self.response = response.status_code
-        self.vacancies = response.json()["items"]
+        if response.status_code == 200:
+            self.vacancies = response.json()["items"]
+        else:
+            print(f"Ошибка запроса - {response.json()}")
 
     def display_vacancies(self) -> None:
         """Метод выводит на экран список полученных вакансий"""
@@ -143,7 +147,10 @@ class SJVacancies(GetVacancies):
 
         response = requests.get(self.url, headers=self.headers, params=self.params)
         self.response = response.status_code
-        self.vacancies = response.json()['objects']
+        if response.status_code == 200:
+            self.vacancies = response.json()['objects']
+        else:
+            print(f"Ошибка запроса - {response.json()}")
 
     def display_vacancies(self):
         """Метод выводит на экран список полученных вакансий"""
